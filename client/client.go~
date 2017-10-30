@@ -1,0 +1,62 @@
+package main
+
+import (
+	"fmt"
+
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
+)
+
+func list_buckets() {
+	s3svc := s3.New(session.New())
+	result, err := s3svc.ListBuckets(&s3.ListBucketsInput{})
+	if err != nil {
+		fmt.Println("Failed to list buckets", err)
+		return
+	}
+
+	fmt.Println("Buckets:")
+	for _, bucket := range result.Buckets {
+		fmt.Printf("%s : %s\n", aws.StringValue(bucket.Name), bucket.CreationDate)
+	}
+}
+
+func list_keys() {
+	s3svc := s3.New(session.New())
+	inputparams := &s3.ListObjectsInput{
+		Bucket:  aws.String("eferro-bucket"),
+		MaxKeys: aws.Int64(10),
+	}
+	pageNum := 0
+	s3svc.ListObjectsPages(inputparams, func(page *s3.ListObjectsOutput, lastPage bool) bool {
+		fmt.Println("Page", pageNum)
+		pageNum++
+		for _, value := range page.Contents {
+			fmt.Println(*value.Key)
+		}
+		fmt.Println("pageNum", pageNum, "lastPage", lastPage)
+
+		// return if we should continue with the next page
+		return true
+	})
+}
+
+func list_bucket_items(bucket string) {
+	s3svc := s3.New(session.New())
+	resp, err := s3svc.ListObjects(&s3.ListObjectsInput{Bucket: aws.String(bucket)})
+
+	if err != nil {
+		exitErrorf("Bucket name required on usage \nUsage: %s bucket_name", os.Args[0])
+	}
+	bucket := os.Args[1]
+
+	for _, item := range resp.Contents {
+		fmt.Println("Name:", item.Key)
+	}
+}
+
+func exitErrorf(msg string, args ...interface{}) {
+	os.Fprintf(os.Stderr, msg+"\n", args...)
+	os.Exit(1)
+}
