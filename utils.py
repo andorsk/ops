@@ -6,14 +6,14 @@ command = sys.argv[1]
 
 
 # Global Flags
-parser = argparse.ArgumentParser(description = "Hi")
+parser = argparse.ArgumentParser(description = "Operations Utility")
 parser.add_argument('command', help = 'commmand')
 parser.add_argument('--verbose', '-v', help = "verbose") 
 parser.add_argument('-f', '--file', help = "file input")
 args = parser.parse_args()
 
 def img2s3():
-    command = ('aws s3 cp {} s3://henosisknot-assets/images/sj/'.format(args.file))
+    command = ('aws s3 cp {} s3://BUCKET_NAME/images/sj/'.format(args.file))
     os.system(command)
 
 def command2():
