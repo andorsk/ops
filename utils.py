@@ -18,7 +18,11 @@ parser.add_argument('-f', '--file', help = "file input")
 args = parser.parse_args()
 
 def img2s3():
-    command = ('aws s3 cp {} s3://BUCKET_NAME/images/sj/'.format(args.file))
+    if args.file is None:
+        print("Please make sure to specify file")
+        exit()
+    command = ('aws s3 cp {} s3://{}/images/sj/'.format(args.file, os.environ['BUCKET_NAME']))
+    print("Running command" + command)
     os.system(command)
 
 def mp42srt():
