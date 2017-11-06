@@ -33,8 +33,9 @@ def mp42srt():
     print("Running command " + command)
     os.system(command)
 
+#need prettier formatting
 def help():
-    print("Commands: ")
+    print("Available Commands: ")
     for key in HELP:
         print(key, ':', HELP[key])
 
